@@ -3,14 +3,11 @@ package mesosphere.marathon.core.launcher.impl
 import mesosphere.marathon.core.base.Clock
 import mesosphere.marathon.core.launcher.{ OfferProcessor, OfferProcessorConfig, TaskLauncher }
 import mesosphere.marathon.core.matcher.base.OfferMatcher
-import mesosphere.marathon.core.matcher.base.OfferMatcher.{ TaskWithSource, MatchedTasks }
-import mesosphere.marathon.core.matcher.base.OfferMatcher
-import mesosphere.marathon.core.matcher.base.util.TaskLaunchSourceDelegate
+import mesosphere.marathon.core.matcher.base.OfferMatcher.{ MatchedTasks, TaskWithSource }
 import mesosphere.marathon.metrics.{ MetricPrefixes, Metrics }
 import mesosphere.marathon.state.Timestamp
 import mesosphere.marathon.tasks.{ TaskIdUtil, TaskTracker }
-import mesosphere.util.state.PersistentEntity
-import org.apache.mesos.Protos.{ TaskInfo, Offer }
+import org.apache.mesos.Protos.Offer
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Future

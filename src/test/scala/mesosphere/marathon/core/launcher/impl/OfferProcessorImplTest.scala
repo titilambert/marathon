@@ -7,8 +7,8 @@ import mesosphere.marathon.core.matcher.base.OfferMatcher
 import OfferMatcher.{ MatchedTasks, TaskLaunchSource, TaskWithSource }
 import mesosphere.marathon.core.matcher.base.OfferMatcher
 import mesosphere.marathon.metrics.Metrics
-import mesosphere.marathon.state.{PathId, Timestamp}
-import mesosphere.marathon.tasks.{TaskIdUtil, TaskTracker}
+import mesosphere.marathon.state.{ PathId, Timestamp }
+import mesosphere.marathon.tasks.{ TaskIdUtil, TaskTracker }
 import mesosphere.marathon.{ MarathonSpec, MarathonTestHelper }
 import mesosphere.util.Mockito
 import mesosphere.util.state.PersistentEntity
