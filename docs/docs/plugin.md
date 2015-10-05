@@ -56,13 +56,13 @@ Maven:
 </dependency>
 ```
 
-Please make sure, that you always use the same version of the plugin interface as the Marathon version in production.
+Please make sure, that you always use the same version of the plugin interface as the version of Marathon in production.
 
 
 
 ## Extension Functionality
 
-To create an extension, you have to implement an extension interface from the plugin interface method, that can be loaded by the ServiceLoader.
+To create an extension, you have to implement an extension interface from the plugin interface method and put it in a location available to Marathon, so that it can be loaded by the ServiceLoader.
 
 ### Service Loader
 
@@ -90,15 +90,15 @@ Inside that jar file the [ServiceLoader](https://docs.oracle.com/javase/8/docs/a
 ### Logging
 
 Marathon uses `slf4j` for logging. The dependency to this library is already available with the plugin interface package.
-If you use this logger classes, all log statement will be available in Marathon.
+If you use these logger classes, all log statement will be available in Marathon.
 
 ### Configuration
 
 Since the plugin mechanism in Marathon relies on the ServiceLoader, the plugin class has to implement a default constructor.
 To pass a certain configuration to the plugin, you can use whatever functionality you like.
 
-We build one optional way, that can be used by your plugin: If you implement the interface [PluginConfiguration](https://github.com/mesosphere/marathon/blob/master/plugin-interface/src/main/scala/mesosphere/marathon/plugin/plugin/PluginConfiguration.scala)
-than the configuration from the plugin descriptor is passed to every created instance of that plugin, before any other method is called.
+We built one optional way, that can be used by your plugin: If you implement the interface [PluginConfiguration](https://github.com/mesosphere/marathon/blob/master/plugin-interface/src/main/scala/mesosphere/marathon/plugin/plugin/PluginConfiguration.scala)
+then the configuration from the plugin descriptor is passed to every created instance of that plugin, before any other method is called.
 
 
 ## Plugin Descriptor
@@ -140,7 +140,7 @@ The configuration section of one plugin is optional. If provided, the json objec
 
 ## Start Marathon with plugins
 
-In order to make your plugins available to Marathon you have to
+In order to make your plugins available to Marathon you have to:
 
 - place your plugin.jar with all dependant jars (that are not already provided by Marathon) into a directory
 - write a plugin descriptor, that list the plugins to use
@@ -162,7 +162,7 @@ This interface relies purely on the HTTP Layer. Please see the [Authenticator](h
 
 #### [mesosphere.marathon.plugin.auth.Authorizer](https://github.com/mesosphere/marathon/blob/master/plugin-interface/src/main/scala/mesosphere/marathon/plugin/auth/Authorizer.scala)
 
-This plugin plays along the Authentication plugin. With this interface you can refine, which authenticated identities can access which resource with which action. 
+This plugin plays along the Authentication plugin. With this interface you can refine, what actions an authenticated identity can perform on Marathon's resources. 
 Please see the [Authorizer](https://github.com/mesosphere/marathon/blob/master/plugin-interface/src/main/scala/mesosphere/marathon/plugin/auth/Authorizer.scala) trait for documentation as well as [Example Scala Plugin](https://github.com/mesosphere/marathon-example-plugins/tree/master/auth) or the [Example Java Plugin](https://github.com/mesosphere/marathon-example-plugins/tree/master/javaauth)   
 
 
