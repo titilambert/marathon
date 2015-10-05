@@ -1,0 +1,451 @@
+
+###
+# Get a list of applications
+#
+get:
+  description: Get the list of running applications. Several filters can be applied to filter the result list.
+  is: [ secured ]
+  queryParameters:
+    cmd:
+      description: the command of this application
+      example: java
+    id:
+      description: the id or part of the id of the application
+      example: /us-east/database/memsql
+    label:
+      description:
+        A label selector query contains one or more label selectors, which are comma separated.
+        Marathon supports three types of selectors existence-based, equality-based and set-based.
+        In the case of multiple selectors, all must be satisfied so comma separator acts as an AND logical operator.
+        Labels and values must consist of alphanumeric characters plus `-` `_` and `.` `-A-Za-z0-9_.`.
+        Any other character is possible, but must be escaped with a backslash character.
+
+        * <code>Existence based Selector Query</code> Matches the existence of a label
+
+        * <code>Equality based Selector Query</code> Matches existence of labels and the (non) equality of the value.
+
+        * <code>Set based Selector Query</code> Matches existence of labels and the (non) existence of the value in a given set
+
+      example: environment==production, tier!=frontend\ tier, deployed in (us, eu), deployed notin (aa, bb)
+    embed:
+      description:
+        Embeds nested resources that match the supplied path.
+        You can specify this parameter multiple times with different values.
+
+        - <code>apps.tasks</code> Apps tasks are not embedded in the response
+        by default. This currently implies apps.deployments currently but that
+        will change in a future version.
+
+        - <code>apps.counts</code> Apps task counts (tasksStaged, tasksRunning,
+        tasksHealthy, tasksUnhealthy) are currently embedded by default but this
+        will change in a future release.
+
+        - <code>apps.deployments</code> This embeds the IDs of deployments related to this
+        app into deployments.
+
+        - <code>apps.lastTaskFailure</code> This embeds the lastTaskFailure for
+        every app if there is one.
+
+        - <code>apps.failures</code> Apps last failures are not embedded in
+        the response by default. This implies apps.lastTaskFailure, apps.tasks, apps.counts and
+        apps.deployments.
+
+        - <code>apps.taskStats</code> This exposes some task
+        statatistics in the JSON.
+
+      enum: [ apps.tasks, apps.count, apps.deployments, apps.lastTaskFailure, apps.failures, apps.taskStats ]
+      repeat: true
+      example: apps.tasks
+  responses:
+    200:
+      description: "The list of applications that match the defined filters"
+      body:
+        application/json:
+          example: !include examples/app_list.json
+
+###
+# update a list of applications
+#
+put:
+  description:
+    Change multiple applications either by upgrading existing ones or creating new ones.
+    If there is an update to an already running application, the application gets upgraded.
+    All instances of this application get replaced by the new version.
+    The order of dependencies will be applied correctly.
+    The upgradeStrategy defines the behaviour of the upgrade.
+
+    If the id of the application is not known, the application gets started.
+    The order of dependencies will be applied correctly.
+    It is possible to mix upgrades and installs.
+
+    If you have more complex scenarios with upgrades, use the groups endpoint.
+  is: [ secured ]
+  body:
+    application/json:
+      example: !include examples/apps_create.json
+  responses:
+    200:
+      description:
+        A deployment is started which has a unique deployment identifier.
+        The related deployment can be fetched from the /v2/deployments endpoint.
+        If the deployement is gone from the list of deployments, than this means it is finished.
+        As long as the deployment runs, the effect of that change operation is visible only partially.
+      body:
+        application/json:
+          example: !include examples/deployments_result.json
+    409:
+      description: There is an already deployed application with this name
+      body:
+        application/json:
+          example: |
+            {"message":"An app with id [/existing_app] already exists."}
+    400:
+      description: The application definition provided in the body is not valid.
+      body:
+        application/json:
+          example: |
+            {"message":"Invalid JSON","details":[{"path":"/id","errors":["error.expected.jsstring"]}]}
+    422:
+      description: The entity send can not be preocessed, since there are validation errors
+      body:
+        application/json:
+          example: |
+            {
+              "message": "Bean is not valid",
+              "errors": [
+                {
+                  "attribute": "upgradeStrategy.minimumHealthCapacity",
+                  "error": "is greater than 1"
+                }
+              ]
+            }
+
+
+
+
+###
+# Create application
+#
+post:
+  description: Create and start a new application.
+  is: [ secured ]
+  body:
+    application/json:
+      example: !include examples/app.json
+      schema: AppDefinition
+  responses:
+    201:
+      description: The application has been created and a deployment is started.
+      body:
+        application/json:
+          example: !include examples/app.json
+    409:
+      description: There is an already deployed application with this name
+      body:
+        application/json:
+          example: |
+            {"message":"An app with id [/existing_app] already exists."}
+    400:
+      description: The application definition provided in the body is not valid.
+      body:
+        application/json:
+          example: |
+            {"message":"Invalid JSON","details":[{"path":"/id","errors":["error.expected.jsstring"]}]}
+    422:
+      description: The entity send can not be preocessed, since there are validation errors
+      body:
+        application/json:
+          example: |
+            {
+              "message": "Bean is not valid",
+              "errors": [
+                {
+                  "attribute": "upgradeStrategy.minimumHealthCapacity",
+                  "error": "is greater than 1"
+                }
+              ]
+            }
+
+
+/{app_id}:
+
+  ###
+  # Get a specific app
+  #
+  get:
+    description:
+      List the application with id `app_id`.
+      The response includes some status information besides the current configuration of the app.
+      You can specify optional embed arguments, to get more embedded information.
+    is: [ secured ]
+    queryParameters:
+      embed:
+        description:
+          Embeds nested resources that match the supplied path.
+          You can specify this parameter multiple times with different values. <br/>
+
+          - <code>app.tasks</code>. App tasks are not embedded in the response
+          by default. This currently implies app.deployments currently but that
+          will change in a future version.
+
+          - <code>app.counts</code>. App task counts (tasksStaged, tasksRunning,
+          tasksHealthy, tasksUnhealthy) are currently embedded by default but this
+          will change in a future release.
+
+          - <code>app.deployments</code>. This embeds the IDs of deployments related to this
+          app into deployments.
+          <code>app.lastTaskFailure</code>. This embeds the lastTaskFailure for
+          every app if there is one.
+
+          - <code>app.failures</code>. App last failures are not embedded in
+          the response by default. This implies app.lastTaskFailure, app.tasks, app.counts and
+          app.deployments.
+
+          - <code>app.taskStats</code> This exposes some task
+          statatistics in the JSON.
+
+        enum: [ app.tasks, app.count, app.deployments, app.lastTaskFailure, app.failures, app.taskStats ]
+        repeat: true
+        example: embed=app.deployments&embed=app.lastTaskFailure
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/app_list.json
+      404:
+        description: No task found with this `app_id`.
+        body:
+          application/json:
+            example: |
+              { "message": "App '/not_existent' does not exist" }
+
+  ###
+  # Update a specific app
+  #
+  put:
+    description:
+      Replaces parameters of a running application. If no application with the given id
+      exists, it will be created. If there is an application with this id, all running instances get
+      upgraded to the new definition.
+    is: [ secured ]
+    queryParameters:
+      force:
+        description: If there is an already running deployment that affects the
+        type: boolean
+        default: false
+    body:
+      application/json:
+        example: !include examples/app.json
+        schema: AppDefinition
+    responses:
+      200:
+        description:
+          A deployment is started which has a unique deployment identifier.
+          The related deployment can be fetched from the /v2/deployments endpoint.
+          If the deployement is gone from the list of deployments, than this means it is finished.
+          As long as the deployment runs, the effect of that change operation is visible only partially.
+        body:
+          application/json:
+            example: !include examples/deployments_result.json
+      404:
+        description: No task found with this `app_id`.
+        body:
+          application/json:
+            example: |
+              { "message": "App '/not_existent' does not exist" }
+      409:
+        description:
+          There is an already running deployment, that affects this application.
+          To override this deployment, use the force=true flag
+        body:
+          application/json:
+            example: |
+              {
+               "message":"App is locked by one or more deployments. Override with the option '?force=true'. View details at '/v2/deployments/<DEPLOYMENT_ID>'.",
+               "deployments":[{"id":"97c136bf-5a28-4821-9d94-480d9fbb01c8"}]
+              }
+      400:
+        description: The application definition provided in the body is not valid.
+        body:
+          application/json:
+            example: |
+              {"message":"Invalid JSON","details":[{"path":"/id","errors":["error.expected.jsstring"]}]}
+      422:
+        description: The entity send can not be preocessed, since there are validation errors
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Bean is not valid",
+                "errors": [
+                  {
+                    "attribute": "upgradeStrategy.minimumHealthCapacity",
+                    "error": "is greater than 1"
+                  }
+                ]
+              }
+
+
+
+  ###
+  # Delete a specific app
+  #
+  delete:
+    description: Destroy an application. All data about that application will be deleted.
+    is: [ secured ]
+    responses:
+      204:
+        description: The response will contain an empty body.
+      404:
+        description: No app with this id known.
+        body:
+          application/json:
+            example: |
+              {"message":"App '/not-existing' does not exist"}
+      409:
+        description:
+          There is an already running deployment, that affects this application.
+          To override this deployment, use the force=true flag
+        body:
+          application/json:
+            example: |
+              {
+               "message":"App is locked by one or more deployments. Override with the option '?force=true'. View details at '/v2/deployments/<DEPLOYMENT_ID>'.",
+               "deployments":[{"id":"97c136bf-5a28-4821-9d94-480d9fbb01c8"}]
+              }
+
+  /restart:
+    ###
+    # Restart this application
+    #
+    post:
+      description: Restart all tasks of this application.
+      is: [ secured ]
+      responses:
+        200:
+          description:
+            A deployment is started which has a unique deployment identifier.
+            The related deployment can be fetched from the /v2/deployments endpoint.
+            If the deployement is gone from the list of deployments, than this means it is finished.
+            As long as the deployment runs, the effect of that change operation is visible only partially.
+          body:
+            application/json:
+              example: !include examples/deployments_result.json
+        404:
+          description: No task found with this `app_id`.
+          body:
+            application/json:
+              example: |
+                { "message": "App '/not_existent' does not exist" }
+
+  /tasks:
+    ###
+    # Create application
+    #
+    get:
+      description: List all running tasks for application `app_id`.
+      is: [ secured ]
+      responses:
+        200:
+          description: The list of running tasks for application `app_id`.
+          body:
+            application/json:
+              example: !include examples/app_tasks.json
+            text/plain:
+              example: |
+                minecraft_survival-world	10013	srv7.hw.ca1.mesosphere.com:31756
+        404:
+          description: No task found with this `app_id`.
+          body:
+            application/json:
+              example: |
+                { "message": "App '/not_existent' does not exist" }
+
+    ###
+    # Create application
+    #
+    delete:
+      description: Kill tasks that belong to the application `app_id`
+      is: [ secured ]
+      queryParameters:
+        host:
+          description: all tasks of that application on the supplied slave are killed
+        scale:
+          type: boolean
+          description: If `scale=true` is specified, then the application is scaled down by the number of killed tasks.
+          default: false
+      responses:
+        200:
+          description: The list of tasks that has been killed.
+          body:
+            application/json:
+              example: !include examples/app_tasks.json
+        404:
+          description: No task found with this `app_id`.
+          body:
+            application/json:
+              example: |
+                { "message": "App '/not_existent' does not exist" }
+
+    /{task_id}:
+      ###
+      # Create application
+      #
+      delete:
+        description: Kill the task with ID `task_id` that belongs to the application `app_id`.
+        queryParameters:
+          scale:
+            type: boolean
+            description: If `scale=true` is specified, then the application is scaled down by the number of killed tasks.
+            default: false
+        responses:
+          200:
+            description: The tasks that has been killed.
+            body:
+              application/json:
+          404:
+            description: No task found with this task_id.
+            body:
+              application/json:
+                example: |
+                  {"message":"Task 'not-existing' does not exist"}
+
+  ###
+  # Create application
+  #
+  /versions:
+    get:
+      description: List the versions of the application with id `app_id`
+      is: [ secured ]
+      responses:
+        200:
+          description: The list of versions of the application
+          body:
+            application/json:
+              example: |
+                { "versions": [ "2014-03-01T23:42:20.938Z" ] }
+        404:
+          description: No task found with this `app_id`.
+          body:
+            application/json:
+              example: |
+                { "message": "App '/not_existent' does not exist" }
+
+    /{version}:
+      get:
+        description: List the configuration of the application with id `app_id` at version `version`.
+        is: [ secured ]
+        responses:
+          200:
+            description: The application definition at that point in time.
+            body:
+              application/json:
+                example: !include examples/app.json
+          404:
+            description: No task found with this `app_id`.
+            body:
+              application/json:
+                example: |
+                  { "message": "App '/not_existent' does not exist" }
+
+

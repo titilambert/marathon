@@ -1,0 +1,29 @@
+#%RAML 0.8
+
+title: Marathon REST API
+version: 2.0
+mediaType: application/json
+baseUri: /
+schemas:
+  - AppDefinition: !include v2/schema/AppDefinition.json
+  - Group: !include v2/schema/Group.json
+
+traits: !include traits.raml
+
+documentation:
+ - title: Using the Marathon REST API
+   content: Make me real!
+
+/v2/apps: !include v2/apps.raml
+/v2/groups: !include v2/groups.raml
+/v2/tasks: !include v2/tasks.raml
+/v2/events: !include v2/events.raml
+/v2/eventSubscriptions: !include v2/eventSubscriptions.raml
+/v2/deployments: !include v2/deployments.raml
+/v2/queue: !include v2/queue.raml
+/v2/artifacts: !include v2/artifacts.raml
+
+
+
+
+

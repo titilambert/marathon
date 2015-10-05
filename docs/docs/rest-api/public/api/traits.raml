@@ -1,0 +1,15 @@
+
+- secured:
+    responses:
+      401:
+        description: Authentication is enabled and you did not provide enough or wrong information to authenticate that request.
+        body:
+          application/json:
+            example: |
+              { "message": "description for authentication failed" }
+      403:
+        description: Authorization is granted but the identity provided does not have sufficient access rights to do that action.
+        body:
+          application/json:
+            example: |
+              { "message": "description for autorization failed" }

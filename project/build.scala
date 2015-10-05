@@ -130,7 +130,7 @@ object MarathonBuild extends Build {
       "Mesosphere Public Repo"    at "http://downloads.mesosphere.io/maven",
       "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
       "Spray Maven Repository"    at "http://repo.spray.io/"
-    ),
+  ),
     fork in Test := true
   )
 
@@ -262,6 +262,7 @@ object Dependencies {
     twitterZk % "compile",
     rxScala % "compile",
     marathonUI % "compile",
+    marathonApiConsole % "compile",
 
     // test
     Test.diffson % "test",
@@ -294,6 +295,7 @@ object Dependency {
     val JsonSchemaValidator = "2.2.6"
     val RxScala = "0.25.0"
     val MarathonUI = "0.12.0-SNAPSHOT"
+    val MarathonApiConsole = "0.0.1-SNAPSHOT"
 
     // test deps versions
     val Mockito = "1.9.5"
@@ -327,6 +329,7 @@ object Dependency {
   val twitterZk = "com.twitter" %% "util-zk" % V.TwitterZk
   val rxScala = "io.reactivex" %% "rxscala" % V.RxScala
   val marathonUI = "mesosphere.marathon" % "ui" % V.MarathonUI
+  val marathonApiConsole = "mesosphere.marathon" % "api-console" % V.MarathonApiConsole
 
   object Test {
     val scalatest = "org.scalatest" %% "scalatest" % V.ScalaTest
