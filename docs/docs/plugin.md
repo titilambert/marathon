@@ -23,7 +23,7 @@ Starting with Marathon 0.12 we provide the ability to extend functionality in Ma
 Every extension comprises this functionality:
 
 - __Extension Aware Functionality:__ Marathon makes specific functionality available for customization. There are hooks implemented into the main system, that can be refined and extended with external plugins.
-- __Extension Interface:__ The extended functionality is defined as scala trait (java interface). In order to extend this functionality, the plugin writer has to implement that interface.
+- __Extension Interface:__ The extended functionality is defined as Scala trait (Java interface). In order to extend this functionality, the plugin writer has to implement that interface.
 - __Plugin Extension:__ This is the implementation of a defined Extension Interface. The implementation needs to be compiled and packaged into one or more separate jar files. 
 - __Plugin Descriptor:__ The descriptor defines, which set of plugins should be enabled in one instance of Marathon.
   
@@ -31,10 +31,10 @@ Every extension comprises this functionality:
 
 ## Plugin Interface
 
-A separate Marathon Plugin interface jar is published with every Marathon Release on that maven repository:
+A separate Marathon Plugin interface jar is published with every Marathon Release on the following Maven repository:
 
 ```
-http://downloads.mesosphere.io/marathon
+http://downloads.mesosphere.io/maven
 ```
 
 with following dependency:
